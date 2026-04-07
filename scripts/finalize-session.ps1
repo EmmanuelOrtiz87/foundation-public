@@ -18,36 +18,24 @@ if (-not [string]::IsNullOrWhiteSpace($GitUser)) { git config --global user.name
 if (-not [string]::IsNullOrWhiteSpace($GitEmail)) { git config --global user.email "$GitEmail" }
 
 # 2. Verificar/Solicitar si falta configuracion y asegurar que este configurado localmente
-$currentLocalUser = git config user.name 2>$null
-$currentLocalEmail = git config user.email 2>$null
-
-if ([string]::IsNullOrWhiteSpace($currentLocalUser)) {
-    $globalUser = git config --global user.name 2>$null
-    if ([string]::IsNullOrWhiteSpace($globalUser)) {
-        $globalUser = Read-Host "Git user.name no configurado (global). Ingresa tu nombre completo"
-        if (-not [string]::IsNullOrWhiteSpace($globalUser)) { git config --global user.name "$globalUser" }
+while ([string]::IsNullOrWhiteSpace($(git config user.name 2>$null))) {
+    Write-Host "[!] Git user.name no detectado." -ForegroundColor Yellow
+    $inputUser = Read-Host "Ingresa tu nombre completo para Git (o 'exit' para cancelar)"
+    if ($inputUser -eq "exit") { exit 1 }
+    if (-not [string]::IsNullOrWhiteSpace($inputUser)) {
+        git config --global user.name "$inputUser"
+        git config user.name "$inputUser"
     }
-    # Asegurar que la configuracion local este establecida si la global esta ahora disponible
-    if (-not [string]::IsNullOrWhiteSpace($globalUser)) { git config user.name "$globalUser" }
-    $currentLocalUser = $globalUser # Actualizar para comprobaciones posteriores
 }
 
-# Similar para el email
-if ([string]::IsNullOrWhiteSpace($currentLocalEmail)) {
-    $globalEmail = git config --global user.email 2>$null
-    if ([string]::IsNullOrWhiteSpace($globalEmail)) {
-        $globalEmail = Read-Host "Git user.email no configurado (global). Ingresa tu correo electronico"
-        if (-not [string]::IsNullOrWhiteSpace($globalEmail)) { git config --global user.email "$globalEmail" }
+while ([string]::IsNullOrWhiteSpace($(git config user.email 2>$null))) {
+    Write-Host "[!] Git user.email no detectado." -ForegroundColor Yellow
+    $inputEmail = Read-Host "Ingresa tu correo electronico para Git (o 'exit' para cancelar)"
+    if ($inputEmail -eq "exit") { exit 1 }
+    if (-not [string]::IsNullOrWhiteSpace($inputEmail)) {
+        git config --global user.email "$inputEmail"
+        git config user.email "$inputEmail"
     }
-    # Asegurar que la configuracion local este establecida si la global esta ahora disponible
-    if (-not [string]::IsNullOrWhiteSpace($globalEmail)) { git config user.email "$globalEmail" }
-    $currentLocalEmail = $globalEmail # Actualizar para comprobaciones posteriores
-}
-
-# Validacion de Identidad Git
-if ([string]::IsNullOrWhiteSpace($currentLocalUser) -or [string]::IsNullOrWhiteSpace($currentLocalEmail)) {
-    Write-Error "Git identity is required to perform commits. Please configure it or pass as parameters."
-    exit 1
 }
 
 # 1. Validar e integrar cambios en la memoria de Engram
@@ -65,6 +53,20 @@ if (git branch --list $targetBranch) {
     # Si falla porque no hay HEAD, git lo manejara en el commit inicial
     git checkout -q -b $targetBranch 2>$null
     if ($LASTEXITCODE -ne 0) { Write-Host "Preparando rama inicial: $targetBranch" -ForegroundColor Yellow }
+}
+
+# Verificar existencia de remoto origin
+if (-not (git remote | Select-String "origin")) {
+    Write-Host "[!] No se encontro el remoto 'origin'." -ForegroundColor Yellow
+    $remoteUrl = Read-Host "Ingresa la URL de tu repositorio remoto (ej. https://github.com/user/repo.git)"
+    while ([string]::IsNullOrWhiteSpace($remoteUrl)) {
+        $remoteUrl = Read-Host "La URL es obligatoria para sincronizar. Ingresala (o 'skip' para no subir nada)"
+        if ($remoteUrl -eq "skip") { break }
+    }
+    if (-not [string]::IsNullOrWhiteSpace($remoteUrl) -and $remoteUrl -ne "skip") {
+        git remote add origin $remoteUrl
+        Write-Host "Remoto 'origin' configurado correctamente." -ForegroundColor Green
+    }
 }
 
 git add .
@@ -86,16 +88,20 @@ if ($LASTEXITCODE -eq 0 -and (git rev-parse HEAD 2>$null)) {
 
 Write-Host "`n>> Sincronizando con Repositorio Remoto..." -ForegroundColor Cyan
 
-# Determinar si necesitamos --set-upstream para el primer push
-$pushOptions = "$targetBranch --tags"
-$upstream = git config "branch.$targetBranch.remote" 2>$null
-if (-not $upstream) {
-    Write-Host "[INFO] Upstream branch no configurada para '$targetBranch'. Intentando con '--set-upstream'." -ForegroundColor Yellow
-    $pushOptions = "-u $targetBranch --tags"
-}
+if (git remote | Select-String "origin") {
+    # Determinar si necesitamos --set-upstream para el primer push
+    $upstream = git config "branch.$targetBranch.remote" 2>$null
+    if (-not $upstream) {
+        Write-Host "[INFO] Upstream branch no configurada para '$targetBranch'. Intentando con '--set-upstream'." -ForegroundColor Yellow
+        git push -u origin $targetBranch --tags 2>$null
+    } else {
+        git push origin $targetBranch --tags 2>$null
+    }
 
-git push origin $pushOptions 2>$null
-if ($LASTEXITCODE -ne 0) { Write-Warning "Error al hacer push. Verifica que el remoto 'origin' este configurado y tengas permisos." }
+    if ($LASTEXITCODE -ne 0) { Write-Warning "Error al hacer push. Verifica que tengas permisos en el repositorio remoto." }
+} else {
+    Write-Warning "Sincronizacion saltada: No hay un remoto 'origin' configurado."
+}
 
 Write-Host ""
 Write-Host "[OK] Sesion finalizada y guardada con exito en Foundation." -ForegroundColor Green
