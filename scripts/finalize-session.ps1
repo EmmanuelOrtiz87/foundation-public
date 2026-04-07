@@ -145,6 +145,10 @@ Write-Host "`n>> Sincronizando con Repositorio Remoto..." -ForegroundColor Cyan
 $pushSuccess = $false
 while (-not $pushSuccess) {
     if (git remote | Select-String "origin") {
+        # Temporariamente permitimos errores para que el bucle de reintento funcione
+        $oldEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+
         # Determinar si necesitamos --set-upstream para el primer push
         $upstream = git config "branch.$targetBranch.remote" 2>$null
         if (-not $upstream) {
@@ -154,10 +158,14 @@ while (-not $pushSuccess) {
             git push origin $targetBranch --tags 2>$null
         }
 
-        if ($LASTEXITCODE -eq 0) {
+        $pushExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $oldEAP
+
+        if ($pushExitCode -eq 0) {
             $pushSuccess = $true
         } else {
-            Write-Warning "Error al hacer push. La URL es invalida, el repositorio no existe o no tienes permisos."
+            Write-Warning "Error al hacer push. El repositorio no existe en la nube o la URL es incorrecta."
+            Write-Host "IMPORTANTE: Asegurate de haber creado el repositorio en la WEB (GitHub/Bitbucket) antes de subirlo." -ForegroundColor Yellow
             Write-Host "URL actual detectada: $(git remote get-url origin)" -ForegroundColor Gray
             $action = Read-Host "¿Que deseas hacer? (r) Reintentar con otra URL, (s) Saltar sincronizacion, (c) Cancelar"
             
