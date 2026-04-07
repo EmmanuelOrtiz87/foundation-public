@@ -1,0 +1,53 @@
+{
+  "workspaceName": "workspace-foundation",
+  "dataRoot": "C:\\Workspace_local\\.engram-data",
+  "toolsRoot": "C:\\Workspace_local\\tools",
+  "projectsRoot": "C:\\Workspace_local\\projects",
+  "projectTemplate": "C:\\Workspace_local\\workspace-foundation\\templates\\project-root",
+  "projectDefaults": {
+    "repositoryMode": "template",
+    "kind": "service",
+    "preset": "default",
+    "architecture": "layered",
+    "profile": "general",
+    "aiModelMode": "none",
+    "aiModelProvider": "",
+    "aiModelName": "",
+    "aiModelEndpoint": "",
+    "aiModelNotes": "",
+    "repoUrl": "",
+    "cloneDir": "",
+    "buildCommand": "",
+    "testCommand": "go test ./...",
+    "postInstallCommand": ""
+  },
+  "tools": [
+    {
+      "name": "engram",
+      "checkCommand": "engram",
+      "install": {
+        "windows": "Write-Host 'Configure the engram release or clone source here for Windows.'",
+        "linux": "Write-Host 'Configure the engram release or clone source here for Linux.'",
+        "macos": "Write-Host 'Configure the engram release or clone source here for macOS.'"
+      }
+    },
+    {
+      "name": "gga",
+      "checkCommand": "gga",
+      "install": {
+        "windows": "Write-Host 'Configure the GGA installer or clone source here for Windows.'",
+        "linux": "Write-Host 'Configure the GGA installer or clone source here for Linux.'",
+        "macos": "Write-Host 'Configure the GGA installer or clone source here for macOS.'"
+      }
+    },
+    {
+      "name": "gentleman-skills",
+      "checkCommand": "skills",
+      "install": {
+        "windows": "Write-Host 'Configure the skills bootstrap here for Windows.'",
+        "linux": "Write-Host 'Configure the skills bootstrap here for Linux.'",
+        "macos": "Write-Host 'Configure the skills bootstrap here for macOS.'"
+      }
+    }
+  ]
+}
