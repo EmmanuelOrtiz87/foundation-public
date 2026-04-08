@@ -188,9 +188,9 @@ if ($hasChanges) {
 
 Write-Host "`n>> Sincronizando con Repositorio Remoto..." -ForegroundColor Cyan
 
-$pushSuccess = $false
-while (-not $pushSuccess) {
-    if (git remote | Select-String "origin") {
+if (git remote | Select-String "origin") {
+    $pushSuccess = $false
+    while (-not $pushSuccess) {
         # Temporariamente permitimos errores para que el bucle de reintento funcione
         $oldEAP = $ErrorActionPreference
         $ErrorActionPreference = 'Continue'
