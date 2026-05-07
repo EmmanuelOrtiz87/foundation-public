@@ -4,64 +4,66 @@
 
 ### Lo que Necesitas
 1. Descargar desde: https://github.com/EmmanuelOrtiz87/foundation-public
-2. `master.key` del repo privado (requiere acceso)
+2. `master.key` del repo privado (requiere acceso) — **o pégalo al primer launch**
 
 ### Paso 1: Descargar
 Ir a: https://github.com/EmmanuelOrtiz87/foundation-public
-- Descargar `Foundation-Setup.exe` (39KB)
-- Descargar `Foundation-Launcher.exe` (34KB) [se copia solo]
+- Descargar `Foundation-Setup.exe` (274KB) — incluye scripts encriptados + launcher v2.0
+- **NO** descargar `Foundation-Launcher.exe` individual (obsoleto, usar el del installer)
 
-### Paso 2: Preparar Archivos
-Crear una carpeta: `C:\Foundation-Installer\`
-- Colocar `Foundation-Setup.exe` ahí
-- (Opcional) Colocar `Foundation-Launcher.exe` ahí
-
-### Paso 3: Ejecutar Instalador como Administrador
+### Paso 2: Ejecutar Instalador
 1. **Right-click** en `Foundation-Setup.exe`
 2. Seleccionar **"Run as Administrator"**
 3. Esperar completación (crea `C:\Program Files\Foundation\`)
 
-### Paso 4: Obtener Master Key
-Del repo privado (`gentleman-foundation`):
-- Copiar `keys/master.key` (32 bytes, AES-256)
+### Paso 3: Obtener Master Key (2 opciones)
+
+**Opción A — Desde repo privado:**
+- Copiar `keys/master.key` (32 bytes, AES-256) de `gentleman-foundation`
 - Colocar en: `C:\Program Files\Foundation\keys\master.key`
 
-### Paso 5: Ejecutar Foundation
-**Opción A** - Shortcut de desktop (creado por instalador):
+**Opción B — Pegar al launch (nuevo en v2.0):**
+- Ejecutar el launcher — te pedirá la key si no la encuentra
+- Puedes pegar la key en formato Base64 directamente
+
+### Paso 4: Ejecutar Foundation
+
+**Opción A** — Shortcut de desktop:
 - Doble-click en **Foundation** en el desktop
 
-**Opción B** - Menú Start:
+**Opción B** — Menú Start:
 - Start Menu → Foundation → Foundation
 
-**Opción C** - Manual:
+**Opción C** — Manual:
 ```powershell
-"C:\Program Files\Foundation\Foundation-Launcher.exe"
+"C:\Program Files\Foundation\Foundation-Launcher.ps1"
 ```
 
 ## Qué se Instala
 ```
 C:\Program Files\Foundation\
-├── protected/              # 188 scripts encriptados (.enc)
-│   ├── scripts/utilities/*.ps1.enc
-│   ├── config/*.json.enc
-│   └── skills/*/SKILL.md.enc
-├── public/                 # 126 skill stubs (sin implementación)
-├── Foundation-Launcher.exe # Launcher compilado
-└── keys/                  # Colocar master.key ahí
-    └── master.key          # (Tú provees esto)
+├── protected/              # Scripts encriptados (.enc)
+│   ├── scripts/utilities/WORKFLOW-ORCHESTRATION/wf.ps1.enc
+│   ├── scripts/utilities/foundation-installer-tui.ps1.enc
+│   └── config/*.json.enc
+├── public/                 # Skill stubs (sin implementación)
+├── Foundation-Launcher.ps1 # Smart launcher v2.0
+└── keys/
+    ├── HOW_TO_GET_KEY.txt  # Instrucciones si no tienes la key
+    └── master.key          # (Tú provees esto, o pégalo al launch)
 ```
 
 ## Verificación
 ```powershell
 # Verificar instalación
 cd "C:\Program Files\Foundation"
-Get-ChildItem -Recurse | Measure-Object | Select-Object Count
+Test-Path "Foundation-Launcher.ps1"
 
-# Verificar master.key
-Test-Path "C:\Program Files\Foundation\keys\master.key"
+# Verificar master.key (opcional)
+Test-Path "keys\master.key"
 
 # Ejecutar launcher
-.\Foundation-Launcher.exe
+pwsh -NoProfile -ExecutionPolicy Bypass -File "Foundation-Launcher.ps1"
 ```
 
 ## Solución de Problemas
@@ -71,24 +73,40 @@ Test-Path "C:\Program Files\Foundation\keys\master.key"
 - O usar directorio no-Program Files: `Foundation-Setup.exe -InstallDir "C:\Foundation"`
 
 **¿Error "Master key not found"?**
-- Obtener `keys/master.key` del repo privado
-- Copiar a: `C:\Program Files\Foundation\keys\master.key`
+- Opción 1: Obtener `keys/master.key` del repo privado
+- Opción 2: El launcher te pedirá que pegues la key — simplemente pégala
+
+**¿Aparecen popups de credenciales?**
+- Si ves popups de Windows pidiendo credenciales, tienes una versión vieja del launcher
+- Descarga la última versión de `Foundation-Setup.exe` (v2.8+, 274KB)
 
 **¿No se crearon shortcuts?**
 - Ejecutar instalador nuevamente como Administrador
-- O ejecutar manualmente: `C:\Program Files\Foundation\Foundation-Launcher.exe`
+- O ejecutar manualmente: `pwsh -NoProfile -File "C:\Program Files\Foundation\Foundation-Launcher.ps1"`
 
 ## Notas Importantes
-- Esta es una **distribución protegida** - no incluye código fuente
-- Los scripts están encriptados con AES-256 - necesitas `master.key` para usarlos
+- Esta es una **distribución protegida** — no incluye código fuente
+- Los scripts están encriptados con AES-256 (IV + datos) — necesitas `master.key` para usarlos
 - Repo privado: https://github.com/EmmanuelOrtiz87/gentleman-foundation
-- **`Foundation-Launcher.exe`** está en el repo público y se copia solo durante instalación
-- Si haces doble-click al launcher y dice "master.key not found", coloca el archivo en la carpeta correcta
+- **Launcher v2.0**: Sin popups de credenciales, con fallback interactivo para la key
+- La versión del installer es **2.8.0** (274KB) — versiones anteriores (< 100KB) son obsoletas
+
+## Changelog
+
+### v2.8.0 (Latest)
+- Launcher v2.0 con pipeline AES-256 completo
+- Sin popups de credenciales (eliminado ConvertTo-SecureString)
+- Fallback interactivo: pega la key si no tienes master.key
+- Installer incluye scripts encriptados (274KB vs 39KB antes)
+- Path corregido a WORKFLOW-ORCHESTRATION
+
+### v2.7.0
+- Installer v4 production-ready
+- 188 scripts encriptados
 
 ## Checklist de Instalación
-- [ ] Descargar `Foundation-Setup.exe`
+- [ ] Descargar `Foundation-Setup.exe` (274KB, v2.8+)
 - [ ] Ejecutar como **Administrator**
-- [ ] Obtener `master.key` del repo privado
-- [ ] Colocar en `C:\Program Files\Foundation\keys\master.key`
+- [ ] Obtener `master.key` del repo privado **O** pegarlo al primer launch
 - [ ] Ejecutar desde shortcut de desktop
 - [ ] ✅ Foundation funcionando!
