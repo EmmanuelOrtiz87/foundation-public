@@ -11,23 +11,26 @@ Download `Foundation-Setup.exe` from this repository (see Releases or root folde
 Right-click `Foundation-Setup.exe` → **Run as Administrator**
 - Installs to `C:\Program Files\Foundation\`
 - Creates desktop and Start Menu shortcuts
-- All components are encrypted (AES-256)
+- Copies encrypted components (AES-256)
 
 ### 3. Launch Foundation
-- Double-click desktop shortcut, or
+- Double-click **Foundation** shortcut on desktop, or
 - Start Menu → Foundation → Foundation
-- Or run: `powershell -ExecutionPolicy Bypass -File "C:\Program Files\Foundation\Foundation-Launcher.ps1"`
+- Or run manually:
+```powershell
+"C:\Program Files\Foundation\Foundation-Launcher.exe"
+```
 
-## What's Inside
+## What's Inside `Foundation-Setup.exe`
 
 ```
 Foundation-Setup.exe contains:
-├── Encrypted Scripts (185 files, .enc extension)
+├── Encrypted Scripts (188 files, .enc extension)
 │   ├── scripts/utilities/*.ps1.enc
 │   ├── config/*.json.enc
 │   └── skills/*/SKILL.md.enc
 ├── Public Stubs (126 skills, no implementation)
-├── Foundation-Launcher.ps1 (decrypts and runs)
+├── Foundation-Launcher.exe (compiled launcher)
 └── Documentation (public only)
 ```
 
@@ -38,25 +41,39 @@ Foundation-Setup.exe contains:
 - **Private repo**: https://github.com/EmmanuelOrtiz87/gentleman-foundation (requires access)
 - This public repo contains only the installer and encrypted stubs
 
-## Post-Installation
+## Post-Installation Steps
 
+1. **Place your master.key**:
+   - Copy `master.key` to: `C:\Program Files\Foundation\keys\master.key`
+   - (Get `master.key` from private repository)
+
+2. **Run Foundation**:
+   - Double-click desktop shortcut, or
+   - Run: `C:\Program Files\Foundation\Foundation-Launcher.exe`
+
+3. **Verify installation**:
 ```powershell
-# Open Foundation
 cd "C:\Program Files\Foundation"
-.\Foundation-Launcher.ps1
-
-# Or use wf CLI (after installation)
-wf verify        # Check stack health
-wf daily-check   # Morning routine
-wf status        # Context efficiency
+.\Foundation-Launcher.exe
 ```
 
 ## Requirements
 
 - Windows 10/11 (64-bit)
-- PowerShell 7+ 
+- PowerShell 7+ (optional, launcher is self-contained)
 - Administrator privileges (for installation)
 - ~200MB disk space
+
+## Installation Step-by-Step (New Machine)
+
+1. Go to: https://github.com/EmmanuelOrtiz87/foundation-public
+2. Download `Foundation-Setup.exe` (39KB)
+3. Right-click → **Properties** → Unblock → Apply (if blocked)
+4. Right-click → **Run as Administrator**
+5. Wait for installation to complete (shortcuts created)
+6. Get `keys/master.key` from private repo
+7. Copy to: `C:\Program Files\Foundation\keys\master.key`
+8. Run Foundation from desktop shortcut
 
 ## Troubleshooting
 
@@ -65,8 +82,12 @@ wf status        # Context efficiency
 - Run as Administrator
 
 **"Cannot decrypt" error?**
-- You need `keys/master.key` from the private repository
-- Place it in `C:\Program Files\Foundation\keys\master.key`
+- You need `keys/master.key` from private repository
+- Place it in: `C:\Program Files\Foundation\keys\master.key`
+
+**Shortcuts not created?**
+- Run installer again as Administrator
+- Or run manually: `C:\Program Files\Foundation\Foundation-Launcher.exe`
 
 ## Links
 
