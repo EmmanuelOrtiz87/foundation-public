@@ -1,0 +1,96 @@
+name: Public Quality Gate
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.ps1'
+      - '**.json'
+      - '**.md'
+      - 'config/**'
+      - 'scripts/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate public repo integrity
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check README exists
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "README.md")) {
+            Write-Error "README.md not found"
+            exit 1
+          }
+          Write-Output "✅ README.md found"
+
+      - name: Validate JSON syntax
+        shell: pwsh
+        run: |
+          $errors = 0
+          Get-ChildItem -Recurse -Filter "*.json" | Where-Object { $_.FullName -notmatch '\\node_modules\\' } | ForEach-Object {
+            try {
+              Get-Content $_.FullName -Raw | ConvertFrom-Json
+            } catch {
+              Write-Error "Invalid JSON: $($_.Name) - $_"
+              $errors++
+            }
+          }
+          if ($errors -gt 0) { exit 1 }
+          Write-Output "✅ All JSON files valid"
+
+      - name: Verify essential scripts exist
+        shell: pwsh
+        run: |
+          $required = @(
+            'scripts/foundation/bootstrap.ps1',
+            'scripts/foundation/bootstrap-machine.ps1',
+            'scripts/foundation/setup-multi-machine.ps1',
+            'scripts/utilities/session-autostart.cmd'
+          )
+          $missing = 0
+          foreach ($file in $required) {
+            if (Test-Path $file) {
+              Write-Output "  ✅ $file"
+            } else {
+              Write-Error "  ❌ $file MISSING"
+              $missing++
+            }
+          }
+          if ($missing -gt 0) { exit 1 }
+          Write-Output "✅ All essential scripts present"
+
+      - name: Check for sensitive patterns
+        shell: pwsh
+        run: |
+          $patterns = @(
+            'PAT_SYNC',
+            'PRIVATE_REPO',
+            'x-access-token',
+            'gentleman-foundation'
+          )
+          $issues = 0
+          Get-ChildItem -Recurse -File -Include "*.ps1", "*.yml", "*.md", "*.json" | Select-ExpandProperty FullName | ForEach-Object {
+            $content = Get-Content $_ -Raw
+            foreach ($pat in $patterns) {
+              if ($content -match $pat) {
+                Write-Error "  ❌ Sensitive pattern '$pat' found in $_"
+                $issues++
+              }
+            }
+          }
+          if ($issues -eq 0) {
+            Write-Output "✅ No sensitive patterns detected"
+          } else {
+            exit 1
+          }
