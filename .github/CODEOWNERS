@@ -1,0 +1,21 @@
+# Default owner for all files
+* @EmmanuelOrtiz87
+
+# Security-critical areas - require review
+config/security-* @EmmanuelOrtiz87
+config/access-control.json @EmmanuelOrtiz87
+config/owner-auth.json @EmmanuelOrtiz87
+docs/NORMATIVAS-SEGURIDAD.md @EmmanuelOrtiz87
+
+# Architecture and governance
+config/orchestrator.json @EmmanuelOrtiz87
+config/auto-delegation.json @EmmanuelOrtiz87
+config/adaptive-*.json @EmmanuelOrtiz87
+docs/NORMATIVAS-*.md @EmmanuelOrtiz87
+
+# CI/CD workflows
+.github/workflows/ @EmmanuelOrtiz87
+
+# Testing infrastructure
+config/testing-policy.json @EmmanuelOrtiz87
+tests/ @EmmanuelOrtiz87
