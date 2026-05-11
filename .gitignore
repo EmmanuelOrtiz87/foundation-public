@@ -1,115 +1,28 @@
-# Workspace Foundation .gitignore
-
-# Auto-generated reports and temporary files
-docs/audit/
-docs/reports/
-docs/metrics/
-*.report.md
-*.audit.md
-
-# Temporary documentation
-docs/temp/
-docs/draft/
-docs/.backup/
-
-# Build and runtime
-bin/
-obj/
-dist/
+# Build artifacts
 build/
-*.exe
-*.dll
-*.so
+dist/
 
-# Cache and temp
-.cache/
-.temp/
-tmp/
-*.tmp
-*.log
-
-# IDE
-.vscode/settings.json
-.vscode/launch.json
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-*.bak
-
-# Environment
-.env
-.env.local
-.env.*.local
-config/github-runner.local.json
-
-# Workspace Security (NEVER commit)
-.workspace/config/owner-auth.json
-
-# Generated reports (runtime artifacts — not source)
-reports/dashboard.html
-reports/metrics-export.csv
-reports/wf-benchmark.json
-reports/trivy-report.json
-trivy-report.json
-
-# Rate-limit and event-bus runtime state
-.event-bus/rate-limit-state.json
-scripts/.event-bus/
-
-# Session temp
+# Session artifacts
 .session/
-.workspace/config/session-auth.json
-.workspace/config/dev-credentials.json
-.runtime/security-*.json
-.runtime/*-audit.log
-.runtime/quality/
+.session-*
 
-# Dependencies
-node_modules/
-packages/
-vendor/
-
-# Test coverage
-coverage/
-.coverage
-*.lcov
-
-# Performance profiling
-*.prof
-*.pprof
-
-# Local development artifacts
-.local/
-.local/social/images/
-
-# Encrypted backups (security)
-.backups/
-
-# Engram data
-.engram-data/
-logs/*.json
-logs/.session-active
+# Runtime / audit
+.runtime/
+.audit/
 
 # Telemetry
 .telemetry/
 
-# OpenCode generated
-config/opencode.schema.json
-.opencode/
+# Event bus
+.event-bus/
 
-# Audit reports (auto-generated)
-LESSONS-LEARNED-*.md
-docs/reference/LESSONS-LEARNED-*.md
+# Engram memory
+.engram/
+.engram-data/
 
-# Judgment-day auto-generated artifacts
-scripts/docs/judgment/
-docs/judgment/
-keys/
+# Binaries (except .exe in root)
+*.exe
 
-# Runtime audit logs
-.logs/
+# OS files
+Thumbs.db
+.DS_Store
