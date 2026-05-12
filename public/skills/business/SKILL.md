@@ -1,14 +1,29 @@
-# ---
+---
+name: business-skills
+description: Business-oriented skills (finance, sales, HR, legal, marketing)
+category: business
+---
 
-**This skill is protected intellectual property.**
+# Business Skills
 
-## Overview
-This skill provides specialized AI-assisted development capabilities for business.
+This directory contains business-oriented skills organized by domain:
 
-## Public Documentation
-- Theory and concepts: See \docs/guides/\
-- Usage examples: See \docs/examples/\
-- Implementation: **Protected** (encrypted)
+- **accounting** — Financial accounting and bookkeeping
+- **compliance** — Legal and regulatory compliance
+- **crm** — Customer relationship management
+- **erp** — Enterprise resource planning
+- **finance** — Financial analysis and planning
+- **hr** — Human resources and talent acquisition
+- **insurance** — Insurance domain knowledge
+- **legal** — Legal compliance and documentation
+- **logistics** — Supply chain and logistics
+- **marketing** — Content creation and growth
+- **payroll** — Payroll management
+- **procurement** — Procurement and vendor management
+- **real-estate** — Real estate domain
+- **recruitment** — Talent acquisition
+- **sales** — Sales strategy and execution
+- **supply-chain** — Supply chain management
+- **tax** — Tax compliance and planning
 
-## Legal Notice
-This skill's implementation is protected by EULA. Unauthorized reverse engineering is prohibited.
+Each subdirectory follows the standard skill structure with SKILL.md manifest.
