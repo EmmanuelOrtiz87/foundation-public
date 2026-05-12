@@ -1,0 +1,13 @@
+﻿{
+  "workspace": {
+    "name": "workspace-foundation",
+    "version": "1.0.0",
+    "type": "foundation",
+    "root": "."
+  },
+  "settings": {
+    "autoSave": true,
+    "contextEfficiencyTarget": 100,
+    "enableTelemetry": true
+  }
+}

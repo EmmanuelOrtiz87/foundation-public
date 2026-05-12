@@ -102,26 +102,6 @@ if ($engramAvailable) {
         Write-ErrorMsg "Could not install Engram. Ensure %GOPATH%\bin is in your PATH."
     }
 }
-}
-
-# 3. Engram (AI Orchestrator)
-if (Get-Command engram -ErrorAction SilentlyContinue) {
-    Write-Success "Engram CLI detected."
-} else {
-    Write-Step "Installing Engram CLI from repository..."
-    $engramToolDir = Join-Path $workspaceRoot "scripts/utilities/engram"
-    if (-not (Test-Path $engramToolDir)) {
-        git clone $ENGRAM_REPO_URL "$engramToolDir"
-    }
-    Push-Location $engramToolDir
-    & go install ./cmd/engram
-    Pop-Location
-    if (Get-Command engram -ErrorAction SilentlyContinue) {
-        Write-Success "Engram CLI installed successfully."
-    } else {
-        Write-ErrorMsg "Could not install Engram. Ensure %GOPATH%\bin is in your PATH."
-    }
-}
 
 # 4. GitHub CLI (Optional but recommended for repo automation)
 Write-Step "Verifying GitHub CLI (gh)..."
