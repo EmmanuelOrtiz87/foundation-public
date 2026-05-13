@@ -240,7 +240,33 @@ on: ...
 
 ---
 
-## 9. REFERENCES
+## 9. RELEASE HOMOLOGATION (Lessons Learned + Best Practices)
+
+### 9.1 Lessons Learned
+
+- El versionado puede quedar desalineado entre repos aun con procesos de sync robustos; siempre
+  validar `VERSION`, tags y ramas.
+- Reiniciar baseline de release a `v1.0.0` debe hacerse sin reescribir historia para evitar riesgos
+  operativos y trazabilidad rota.
+- Homologar solo `main` no alcanza; `develop` debe quedar alineada para mantener continuidad.
+
+### 9.2 Best Practices
+
+1. Antes de release, verificar en ambos repos:
+   - `VERSION`
+   - tags (`git tag --sort=-creatordate`)
+   - tracking de ramas (`git branch -vv`)
+2. Aplicar cambios de baseline en secuencia:
+   - commit en `main`
+   - push a `origin/main`
+   - merge `main -> develop`
+   - push a `origin/develop`
+3. No mover tags existentes; solo crear el tag faltante cuando corresponda.
+4. Mantener gates activos (hooks, tests, auditorias) incluso en cambios solo de versionado.
+
+---
+
+## 10. REFERENCES
 
 | Resource | Path |
 |----------|------|
