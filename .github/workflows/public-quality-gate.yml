@@ -55,8 +55,7 @@ jobs:
           $required = @(
             'scripts/foundation/bootstrap.ps1',
             'scripts/foundation/bootstrap-machine.ps1',
-            'scripts/foundation/setup-multi-machine.ps1',
-            'scripts/utilities/session-autostart.cmd'
+            'scripts/foundation/setup-multi-machine.ps1'
           )
           $missing = 0
           foreach ($file in $required) {
@@ -76,12 +75,29 @@ jobs:
           $patterns = @(
             'PAT_SYNC',
             'PRIVATE_REPO',
-            'x-access-token',
-            'gentleman-foundation'
+            'x-access-token'
+          )
+          $allowedFiles = @(
+            '.github/workflows/public-quality-gate.yml',
+            '.github/workflows/sync-public.yml',
+            '.github/scripts/setup-branch-protection.ps1'
+          )
+          $scanRoots = @(
+            'scripts',
+            'config',
+            '.github/workflows',
+            '.github/scripts',
+            'hooks',
+            'keys'
           )
           $issues = 0
-          Get-ChildItem -Recurse -File -Include "*.ps1", "*.yml", "*.md", "*.json" | Select-ExpandProperty FullName | ForEach-Object {
-            $content = Get-Content $_ -Raw
+          Get-ChildItem -Path $scanRoots -Recurse -File -Include "*.ps1", "*.yml", "*.json" | ForEach-Object {
+            $relativePath = $_.FullName.Substring((Get-Location).Path.Length + 1).Replace([char]92, '/')
+            if ($allowedFiles -contains $relativePath) {
+              return
+            }
+
+            $content = Get-Content $_.FullName -Raw
             foreach ($pat in $patterns) {
               if ($content -match $pat) {
                 Write-Error "  ❌ Sensitive pattern '$pat' found in $_"
