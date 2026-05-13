@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 35
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -52,3 +52,4 @@ jobs:
             exit 1
           }
           Write-Host "agent-verify: PASS (warnings: $($result.summary.warnings))"
+
