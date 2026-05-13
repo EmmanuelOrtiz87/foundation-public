@@ -1,154 +1,150 @@
-# Foundation — Guía de Instalación
+# Foundation — Installation Guide
 
-## ¿Cómo se Distribuye Foundation?
+## Distribution Model
 
-Foundation usa un modelo de **distribución encriptada**. El código fuente completo (scripts, configuraciones, skills) reside en el repositorio privado `gentleman-foundation`. El repositorio público `foundation-public` contiene solo:
+Foundation is distributed as a **single installer**: `Foundation.exe`.
 
-- **`Foundation-Setup.exe`** — Instalador NSIS que despliega todo el stack encriptado
-- **`protected/`** — Scripts y configs encriptados con AES-256 (requieren `master.key`)
-- **`public/`** — Stubs públicos de los skills (solo para descubrimiento)
-- **`scripts/foundation/`** — Scripts de bootstrap (código abierto, necesarios para onboarding)
-- **Documentación, demos y ejemplos**
+This file contains the **entire** stack (scripts, configurations, skills, launcher) **encrypted with AES-256** inside a professional NSIS installer wizard.
 
-> ⚠️ **No clonar el repo no es suficiente** — El stack completo solo se activa mediante el instalador.
-> El repo público es el **hub de distribución** del `.exe`.
+> 🔒 Without the **master.key**, encrypted scripts cannot be executed. Request it from the private repository `gentleman-foundation`.
 
 ---
 
-## Opción 1: Usar el Instalador (Recomendado)
+## Installation (single step)
 
-### Lo que Necesitas
+### Prerequisites
 
-1. **`Foundation-Setup.exe`** — Descárgalo de la raíz de este repositorio
-2. **`master.key`** — Llave AES-256 del repositorio privado (solicitar acceso)
+1. **`Foundation.exe`** — Download from the root of this repository
+2. **`master.key`** — AES-256 key from the private repository (request access)
 
-### Paso 1: Descargar
+### Step 1: Download
 
-Descarga `Foundation-Setup.exe` desde:
+Download `Foundation.exe` from the root of this repository:
 https://github.com/EmmanuelOrtiz87/foundation-public
 
-El instalador incluye el launcher compilado `Foundation-Launcher.exe` y todos los scripts encriptados.
-
-### Paso 2: Ejecutar Instalador
+### Step 2: Run the Installer
 
 1. **Right-click** → **Run as Administrator**
-2. Sigue el asistente (destino: `C:\Program Files\Foundation\`)
-3. El instalador crea accesos directos en Start Menu y Desktop
+2. Follow the NSIS installer wizard
+3. Default destination: `C:\Program Files\Foundation\`
+4. The installer creates **Start Menu** and **Desktop** shortcuts
 
-### Paso 3: Obtener Master Key
+### Step 3: Obtain Master Key
 
-**Opción A — Desde repo privado:**
-- Copiar `keys/master.key` del repositorio `gentleman-foundation`
-- Colocar en: `C:\Program Files\Foundation\keys\master.key`
+Copy `keys/master.key` from the private repository to:
+`C:\Program Files\Foundation\keys\master.key`
 
-**Opción B — Pegar al launch (v2.0+):**
-- Ejecuta el launcher desde el acceso directo
-- Te pedirá que pegues la key en Base64 si no la encuentra
-- La key se guarda automáticamente en `keys/master.key`
+> 💡 If you run the launcher without the key, it will prompt you to paste the Base64 key and cache it automatically.
 
-### Paso 4: Ejecutar Foundation
+### Step 4: Run Foundation
 
-¡Listo! Usa el acceso directo en el Desktop o Start Menu.
+Use the **Desktop** or **Start Menu** shortcut, or from the terminal:
+
+```powershell
+wf start-session     # Start session with persistent memory
+wf judgment-day      # Verify everything is OK (14 gates)
+wf version           # Show version and available skills
+```
 
 ---
 
-## Opción 2: Bootstrap Manual (Sin Instalador)
+## Manual Bootstrap (Alternative)
 
-Para entornos donde no se puede ejecutar el `.exe`:
+For environments where the `.exe` cannot be run:
 
 ```powershell
-# Clonar el repositorio
 git clone https://github.com/EmmanuelOrtiz87/foundation-public.git
 cd foundation-public
-
-# Ejecutar bootstrap portable
 .\scripts\foundation\bootstrap.ps1
 ```
 
-> ℹ️ El bootstrap manual solo configura el workspace y skills públicos.
-> Para el stack completo (skills encriptados + orquestación), usa el instalador `.exe`.
+> ℹ️ Manual bootstrap only sets up the basics. For the full stack, use `Foundation.exe`.
 
 ---
 
-## Estructura del Repositorio Público
+## Repository Structure
 
 ```
 foundation-public/
-├── Foundation-Setup.exe       # Instalador NSIS (everything included)
-├── Foundation-Launcher.exe    # Launcher compilado (AES-256 decryption)
-├── protected/                 # Scripts encriptados (.enc)
-│   ├── scripts/               #   Orchestradores, utilities, agentes (.ps1.enc)
-│   ├── config/                #   Configs de routing y agentes (.json.enc)
-│   └── skills/                #   Skills completos (SKILL.md + .enc)
-├── public/                    # Skill stubs públicos
-│   └── skills/                #   Solo SKILL.md (teoría, sin implementación)
-├── scripts/foundation/        # Bootstrap scripts (código abierto)
+├── Foundation.exe              # ← SINGLE installer (AES-256 encrypted, NSIS wizard)
+├── protected/                  # Encrypted scripts (.enc)
+│   ├── scripts/                #   Orchestrators, utilities, agents (.ps1.enc)
+│   ├── config/                 #   Routing and agent configs (.json.enc)
+│   └── skills/                 #   Complete skills (SKILL.md + .enc)
+├── public/                     # Public skill stubs
+│   └── skills/                 #   SKILL.md only (theory, no implementation)
+├── scripts/foundation/         # Bootstrap scripts (open source)
 │   ├── bootstrap.ps1
 │   ├── bootstrap-machine.ps1
 │   └── setup-multi-machine.ps1
-├── docs/                      # Documentación pública
-├── demos/                     # Material de demostración
-├── config/                    # Configs de ejemplo (sin secretos)
-├── README.md                  # Este archivo
-├── INSTALLATION.md            # Esta guía
+├── docs/                       # Public documentation
+├── demos/                      # Demonstration material
+├── config/                     # Example configs (no secrets)
+├── README.md                   # This file
+├── INSTALLATION.md             # This guide
 ├── CHANGELOG.md
-└── LICENSE                    # MIT
+└── LICENSE                     # MIT
 ```
 
 ---
 
-## Verificación
+## Verification
 
 ```powershell
-# Verificar que el instalador existe
-Test-Path "Foundation-Setup.exe"
+# Verify Foundation.exe exists
+Test-Path "Foundation.exe"
 
-# Después de instalar, verificar launcher
+# After installation, verify the launcher
 Test-Path "C:\Program Files\Foundation\Foundation-Launcher.exe"
 
-# Verificar master.key (después de copiarlo)
+# Verify master.key (after copying)
 Test-Path "C:\Program Files\Foundation\keys\master.key"
+
+# Run health check
+wf judgment-day
 ```
 
 ---
 
-## Solución de Problemas
+## Troubleshooting
 
-| Error | Solución |
+| Error | Solution |
 |-------|----------|
 | **"Administrator required"** | Right-click → Run as Administrator |
-| **"Master key not found"** | Opción 1: Copiar `keys/master.key` del repo privado. Opción 2: Pega la key en Base64 cuando el launcher la pida |
-| **Popups de credenciales** | Versión antigua del launcher (< v2.0). Descarga la última versión de `Foundation-Setup.exe` |
-| **No shortcuts** | Re-ejecutar el instalador como Administrador |
+| **"Master key not found"** | Copy `keys/master.key` from the private repo to `C:\Program Files\Foundation\keys\` |
+| **Credential popups** | Outdated launcher (< v2.0). Download the latest `Foundation.exe` |
+| **No shortcuts** | Re-run the installer as Administrator |
+| **PowerShell 7+ required** | Download from https://aka.ms/powershell |
+| **Git 2.50+ required** | Download from https://git-scm.com |
 
 ---
 
-## Notas Importantes
+## Important Notes
 
-- **Distribución protegida**: Todo el código fuente viaja encriptado con AES-256
-- **Sin código fuente visible**: El repositorio público solo expone lo necesario para distribución y documentación
-- **Master key**: Es el único secreto necesario. Sin ella, los scripts encriptados no pueden ejecutarse
-- **Launcher v2.0+**: Sin popups de credenciales, con fallback interactivo para la key
+- **Protected distribution**: All source code travels encrypted with AES-256 inside the installer
+- **No visible source code**: The public repository only exposes what's needed for distribution
+- **Master key**: It's the only secret required. Without it, encrypted scripts cannot be executed
+- **Single file**: `Foundation.exe` is the ONLY file you need to download — includes launcher, scripts, and stubs
 
 ---
 
 ## Changelog
 
-### v2.8.0 (Latest)
-- Launcher v2.0 con pipeline AES-256 completo
-- Sin popups de credenciales (eliminado ConvertTo-SecureString)
-- Fallback interactivo: pega la key si no tienes master.key
-- Repositorio público limpio: solo bootstrap scripts en texto plano, todo lo demás encriptado en `protected/`
+### v2.9.1 (Latest)
+- **Full unification**: `Foundation.exe` is now the SINGLE installer (professional NSIS wizard)
+- Removed from public repository: `Foundation-Launcher.exe` and `Foundation-Setup.exe`
+- Simplified installation: download → run as Admin → done
 
-### v2.7.0
-- Installer v4 production-ready
-- 188+ scripts encriptados
+### v2.8.0
+- Launcher v2.0 with complete AES-256 pipeline
+- No credential popups (removed ConvertTo-SecureString)
+- Interactive fallback: paste key if master.key not found
 
 ---
 
 ## Checklist
 
-- [ ] Descargar `Foundation-Setup.exe` de este repositorio
-- [ ] Ejecutar como Administrator
-- [ ] Obtener `master.key` del repo privado (o pegarlo al primer launch)
-- [ ] ✅ Foundation funcionando
+- [ ] Download `Foundation.exe` from this repository
+- [ ] Run as Administrator
+- [ ] Obtain `master.key` from the private repo (or paste on first launch)
+- [ ] ✅ `wf judgment-day` — all OK
