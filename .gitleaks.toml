@@ -16,6 +16,9 @@ paths = [
     "skills/security-expert-skill/",
     # Model router config with intentional password hash
     "config/model-router\\.json",
+    # Public sync workflows intentionally reference PAT_SYNC and token URLs
+    "\\.github/workflows/public-quality-gate\\.yml",
+    "\\.github/workflows/sync-public\\.yml",
 ]
 
 regexes = [
@@ -27,6 +30,11 @@ regexes = [
     "^192\\.0\\.2\\.",
     "^198\\.51\\.100\\.",
     "^203\\.0\\.113\\.",
+    # Allow sanctioned public-repo sync references in workflow text
+    "(?i)PAT_SYNC",
+    "(?i)PRIVATE_REPO",
+    "(?i)x-access-token",
+    "(?i)gentleman-foundation",
 ]
 
 commits = [
